@@ -235,6 +235,7 @@ You would use these if you don't use `fp` to wrap the promise.
 **Known TODOs**
 - Actually make the readme good/helpful/clear.
 - Decide about aliases:
+
   | Data | Issue | Both |
   |------|-------|------|
   | map (dmap) | imap | bmap (map with two functions) |
