@@ -30,13 +30,13 @@ With these three paths, we can have an API which is safe, intentional,
  convenient, and more readable.
 
 Importantly this abstraction:
-[x] using promises
-[x] leave the promise prototype untouched
-[x] provide a safe API for using them which isn't casually dangerous
-[x] ensures unintentional runtime errors are not handled
-[x] provides utility methods for working with the data
-[x] increases readability (vs try blocks)
-[x] keeps control in main call block (so returns work)
+- [x] using promises
+- [x] leave the promise prototype untouched
+- [x] provide a safe API for using them which isn't casually dangerous
+- [x] ensures unintentional runtime errors are not handled
+- [x] provides utility methods for working with the data
+- [x] increases readability (vs try blocks)
+- [x] keeps control in main call block (so returns work)
 
 `fPromise` works by ensuring only native exceptions are ever in the "rejected" lane,
 and uses a special wrapper object for the "fulfilled" lane: one which has
