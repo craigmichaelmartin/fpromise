@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "jest": "^24.1.0",
-    "np": "^4.0.2",
+    "np": "^5.0.3",
     "prettier": "^1.9.2"
   },
   "jest": {
