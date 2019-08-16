@@ -15,6 +15,7 @@ npm install --save fpromise
 `fPromise` is a javascript library for working with promises.
 
 It seeks to resolve [three problems with promises](https://dev.to/thecraigmichael/the-problem-with-promises-in-javascript-5h46):
+
 - Promises have an API which encourages casually dangerous code
 - Promises co-mingle rejected promises with unintended native exceptions
 - Promises lack a suite of convenient API methods to work with results
@@ -27,9 +28,10 @@ a data path, a non-native exception path (ie, for promises rejected by your
 own intentions), and a native exception path.
 
 With these three paths, we can have an API which is safe, intentional,
- convenient, and more readable.
+convenient, and more readable.
 
 Importantly this abstraction:
+
 - [x] using promises
 - [x] leave the promise prototype untouched
 - [x] provide a safe API for using them which isn't casually dangerous
@@ -56,10 +58,10 @@ either the data or the non-native issue which occurred.
 Pass a promise to the `fp` function.
 
 ```javascript
-  const { fp } = require('fpromise');
-  const [data, issue] = await fp(Promise.resolve('foo')); // data === foo
-  const [data, issue] = await fp(Promise.reject('bar')); // issue === bar
-  const [data, issue] = await fp(Promise.resolve().then(x => undefined())); // throws! good!
+const { fp } = require('fpromise');
+const [data, issue] = await fp(Promise.resolve('foo')); // data === foo
+const [data, issue] = await fp(Promise.reject('bar')); // issue === bar
+const [data, issue] = await fp(Promise.resolve().then(x => undefined())); // throws! good!
 ```
 
 If you want to work with the data, await the promise (so it resolves to the
@@ -83,34 +85,32 @@ Either, and then use those methods).
   // prints foo, data === FOO
 ```
 
-
 ## Example
 
 ```javascript
 // data-access/user.js
-const save = user => fp(db.execute(user.getInsertSQL()))
+const save = user => fp(db.execute(user.getInsertSQL()));
 
 // service/user.js
 const save = async data =>
   (await save(User(data)))
     .tap(getStandardLog('user_creation'))
     .map(User.parseUserFromDB)
-    .itap(logError)
+    .itap(logError);
 
 // controllers/user.js
 const postHandler = async (userDate, response) => {
   const [user, error] = await save(userData);
   if (error) {
-    const errorToCode = { 'IntegrityError': 422 }; 
+    const errorToCode = { IntegrityError: 422 };
     return response.send(errorToCode[error.constructor.name] || 400);
   }
   response.send(204);
   postEmailToMailChimp(user.email).tapError(logError);
-}
+};
 ```
 
 If we wanted to use the more functional approach, no need for initially wrapping the promise:
-
 
 ```javascript
 // data-access/user.js
@@ -131,7 +131,6 @@ const postHandler = async (userDate, response) => {
 
 If we want to move even further in the functional direction, we could:
 
-
 ```javascript
 // data-access/user.js
 const save = user => db.execute(user.getInsertSQL();
@@ -150,67 +149,66 @@ const postHandler = (userDate, response) =>
   );
 ```
 
-
 ## API
 
-| function | explanation / example |
-| -------- | ----------------------|
-| `fp`     | Accepts a promise and return a promise which rejects for native errors or resolves to an Either <br/> `const [data, issue] = await fp(Promise.resolve('foo')); // data == 'foo'`
+| function | explanation / example                                                                                                                                                            |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fp`     | Accepts a promise and return a promise which rejects for native errors or resolves to an Either <br/> `const [data, issue] = await fp(Promise.resolve('foo')); // data == 'foo'` |
 
 **`Data`**
 
-| utility methods | explanation / example |
-| ------ | ----------------------|
-| `map` | Accepts a transforming fn and returns a Data with the newly transformed value <br/> `const [data, issue] = Data('foo').map(x => x.toUpperCase()) // data === FOO`
-| `imap` (issue map) | Accepts a transforming fn, but is a no-op - method targets Issue <br/> `const [data, issue] = Data('foo').imap(x => x.toUpperCase()) // data === foo`
-| `bmap` (both map) | Accepts two transforming fns, and returns a Data with the value of the first fn's transform <br/>`const [data, issue] = Data('foo').bmap(x => x.toUpperCase(), y => y.length) // data === FOO`
-| `raw` | Accepts a transforming fn and returns its value (without reboxing in Data) <br/> `const val = Data('foo').raw(x => x.toUpperCase()) // val === FOO`
-| `iraw` (issue raw) | Accepts a fn, but is a no-op - method targets Issue <br/> `const val = Data('foo').iraw(x=> x.toUpperCase()) // val === foo`
-| `braw` (both raw) | Accepts two transforming fns, and returns the value of the first fn's transform (without reboxing) <br/> `const val = Data('foo').braw(x => x.toUpperCase(), y => y.length) // val === FOO`
-| `tap` | Accepts a side effect fn and runs it on the data (fn's return is not used) <br/> `const [data, issue] = Data('foo').tap(console.log) // foo is printed; data === 'foo'`
-| `itap` (issue tap) | Accepts a side effect fn but is a no-op - method targets Issue <br/> `const [data, issue] = Data('foo').itap(console.log) // nothing printed, data === 'foo'`
-| `btap` (both tap) | Accepts two side effect fns, and runs the first fn (fn's return is not used) <br/> `const [data, issue] = Data('foo').btap(console.log, console.warn) // foo is printed; data === 'foo'`
-| `val` | Returns data as first element in array <br/> `const [data, issue] = Data('foo').val() // data === foo`
-| `isData` | Returns true <br/> `Data('foo').isData // true`
-| `isIssue` | Returns false <br/> `Data('foo').isIssue // false`
-| `[Symbol.iterator]` | Yields data and nothing else. This is the reason we can "unbox" Data with array destructing <br/> `const [data, issue] = Data('foo') // data === 'foo'`
+| utility methods     | explanation / example                                                                                                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `map`               | Accepts a transforming fn and returns a Data with the newly transformed value <br/> `const [data, issue] = Data('foo').map(x => x.toUpperCase()) // data === FOO`                              |
+| `imap` (issue map)  | Accepts a transforming fn, but is a no-op - method targets Issue <br/> `const [data, issue] = Data('foo').imap(x => x.toUpperCase()) // data === foo`                                          |
+| `bmap` (both map)   | Accepts two transforming fns, and returns a Data with the value of the first fn's transform <br/>`const [data, issue] = Data('foo').bmap(x => x.toUpperCase(), y => y.length) // data === FOO` |
+| `raw`               | Accepts a transforming fn and returns its value (without reboxing in Data) <br/> `const val = Data('foo').raw(x => x.toUpperCase()) // val === FOO`                                            |
+| `iraw` (issue raw)  | Accepts a fn, but is a no-op - method targets Issue <br/> `const val = Data('foo').iraw(x=> x.toUpperCase()) // val === foo`                                                                   |
+| `braw` (both raw)   | Accepts two transforming fns, and returns the value of the first fn's transform (without reboxing) <br/> `const val = Data('foo').braw(x => x.toUpperCase(), y => y.length) // val === FOO`    |
+| `tap`               | Accepts a side effect fn and runs it on the data (fn's return is not used) <br/> `const [data, issue] = Data('foo').tap(console.log) // foo is printed; data === 'foo'`                        |
+| `itap` (issue tap)  | Accepts a side effect fn but is a no-op - method targets Issue <br/> `const [data, issue] = Data('foo').itap(console.log) // nothing printed, data === 'foo'`                                  |
+| `btap` (both tap)   | Accepts two side effect fns, and runs the first fn (fn's return is not used) <br/> `const [data, issue] = Data('foo').btap(console.log, console.warn) // foo is printed; data === 'foo'`       |
+| `val`               | Returns data as first element in array <br/> `const [data, issue] = Data('foo').val() // data === foo`                                                                                         |
+| `isData`            | Returns true <br/> `Data('foo').isData // true`                                                                                                                                                |
+| `isIssue`           | Returns false <br/> `Data('foo').isIssue // false`                                                                                                                                             |
+| `[Symbol.iterator]` | Yields data and nothing else. This is the reason we can "unbox" Data with array destructing <br/> `const [data, issue] = Data('foo') // data === 'foo'`                                        |
 
 **`Issue`**
 
-| utility methods | explanation / example |
-| ------ | ----------------------|
-| `map` | Accepts a transforming fn, but is a no-op - method targets Data <br/> `const [data, issue] = Issue('bar').imap(x => x.toUpperCase()) // issue === bar`
-| `imap` (issue map) | Accepts a transforming fn and returns an Issue with the newly transformed value <br/> `const [data, issue] = Issue('bar').imap(x => x.toUpperCase()) // issue === BAR`
-| `bmap` (both map) | Accepts two transforming fns, and returns a Issue with the value of the second fn's transform <br/>`const [data, issue] = Issue('bar').bmap(x => x.length(), y => y.toUpperCase) // issue === BAR`
-| `raw` | Accepts a fn, but is a no-op - method targets Issue <br/> `const val = Issue('bar').raw(x=> x.toUpperCase()) // val === bar`
-| `iraw` (issue raw) | Accepts a transforming fn and returns its value (without reboxing in Issue) <br/> `const val = Issue('bar').iraw(x => x.toUpperCase()) // val === BAR`
-| `braw` (both raw) | Accepts two transforming fns, and returns the value of the second fn's transform (without reboxing) <br/> `const val = Issue('bar').braw(x => x.length(), y => y.toUpperCase()) // val === BAR`
-| `tap` | Accepts a side effect fn but is a no-op - method targets Issue <br/> `const [data, issue] = Issue('bar').itap(console.log) // nothing printed, issue === 'bar'`
-| `itap` (issue tap) | Accepts a side effect fn and runs it on the issue (fn's return is not used) <br/> `const [data, issue] = Issue('bar').itap(console.log) // bar is printed; issue === 'bar'`
-| `btap` (both tap) | Accepts two side effect fns, and runs the second fn (fn's return is not used) <br/> `const [data, issue] = Issue('bar').btap(console.warn, console.log) // bar is printed; issue === 'bar'`
-| `val` | Returns issue as the second element in array <br/> `const [data, issue] = Issue('bar').val() // issue === bar`
-| `isData` | Returns false <br/> `Data('bar').isData // false`
-| `isIssue` | Returns true <br/> `Data('bar').isIssue // true`
-| `[Symbol.iterator]` | Yields undefined and then data. This is the reason we can "unbox" Issue with array destructing <br/> `const [data, issue] = Issue('bar') // issue === 'bar'`
+| utility methods     | explanation / example                                                                                                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `map`               | Accepts a transforming fn, but is a no-op - method targets Data <br/> `const [data, issue] = Issue('bar').imap(x => x.toUpperCase()) // issue === bar`                                             |
+| `imap` (issue map)  | Accepts a transforming fn and returns an Issue with the newly transformed value <br/> `const [data, issue] = Issue('bar').imap(x => x.toUpperCase()) // issue === BAR`                             |
+| `bmap` (both map)   | Accepts two transforming fns, and returns a Issue with the value of the second fn's transform <br/>`const [data, issue] = Issue('bar').bmap(x => x.length(), y => y.toUpperCase) // issue === BAR` |
+| `raw`               | Accepts a fn, but is a no-op - method targets Issue <br/> `const val = Issue('bar').raw(x=> x.toUpperCase()) // val === bar`                                                                       |
+| `iraw` (issue raw)  | Accepts a transforming fn and returns its value (without reboxing in Issue) <br/> `const val = Issue('bar').iraw(x => x.toUpperCase()) // val === BAR`                                             |
+| `braw` (both raw)   | Accepts two transforming fns, and returns the value of the second fn's transform (without reboxing) <br/> `const val = Issue('bar').braw(x => x.length(), y => y.toUpperCase()) // val === BAR`    |
+| `tap`               | Accepts a side effect fn but is a no-op - method targets Issue <br/> `const [data, issue] = Issue('bar').itap(console.log) // nothing printed, issue === 'bar'`                                    |
+| `itap` (issue tap)  | Accepts a side effect fn and runs it on the issue (fn's return is not used) <br/> `const [data, issue] = Issue('bar').itap(console.log) // bar is printed; issue === 'bar'`                        |
+| `btap` (both tap)   | Accepts two side effect fns, and runs the second fn (fn's return is not used) <br/> `const [data, issue] = Issue('bar').btap(console.warn, console.log) // bar is printed; issue === 'bar'`        |
+| `val`               | Returns issue as the second element in array <br/> `const [data, issue] = Issue('bar').val() // issue === bar`                                                                                     |
+| `isData`            | Returns false <br/> `Data('bar').isData // false`                                                                                                                                                  |
+| `isIssue`           | Returns true <br/> `Data('bar').isIssue // true`                                                                                                                                                   |
+| `[Symbol.iterator]` | Yields undefined and then data. This is the reason we can "unbox" Issue with array destructing <br/> `const [data, issue] = Issue('bar') // issue === 'bar'`                                       |
 
 **Funtional**
 
 You would use these if you don't use `fp` to wrap the promise.
 
-| functions |
-| -------- |
-| `map` | `const [d, i] = await Promise.resolve('foo').then(...map(x => x.toUpperCase())) // d = FOO` <br/> `const [d, i] = await Promise.reject('bar').then(...map(x => x.toUpperCase())) // i = bar`
-| `imap` (issue map) | `const [d, i] = await Promise.resolve('foo').then(...imap(x => x.toUpperCase())) // d = foo` <br/> const [d, i] = await Promise.reject('bar').then(...imap(x => x.toUpperCase())) // BAR`
-| `bmap` (both map) | `const [d, i] = await Promise.resolve('foo').then(...bmap(x => x.toUpperCase(), y => y.length)) // d = FOO` <br/> `const [d, i] = await Promise.reject('bar').then(...bmap(x => x.length, y => y.toUpperCase())) // BAR`
-| `raw` | `await Promise.resolve('foo').then(...raw(x => x.toUpperCase())) // FOO` <br/> `await Promise.reject('bar').then(...raw(x => x.toUpperCase())) // bar`
-| `iraw` (issue raw) | `await Promise.resolve('foo').then(...iraw(x => x.toUpperCase())) // foo` <br/> `await Promise.reject('bar').then(...iraw(x => x.toUpperCase())) // BAR`
-| `braw` (both raw) | `await Promise.resolve('foo').then(...braw(x => x.toUpperCase(), y => y.length)) // d = FOO` <br/> `await Promise.reject('bar').then(...braw(x => x.length, y => y.toUpperCase())) // BAR`
-| `tap` | `const [d, i] = await Promise.resolve('foo').then(...tap(console.log)) // prints foo, d = foo` <br/> `const [d, i] = await Promise.reject('bar').then(...tap(console.log)) // i = bar`
-| `itap` (issue tap) | `const [d, i] = await Promise.resolve('foo').then(...itap(console.log)) // d = foo` <br/> `const [d, i] = await Promise.reject('bar').then(console.log) // prints bar, i = bar`
-| `btap` (both tap) | `const [d, i] = await Promise.resolve('foo').then(...btap(console.log, console.warn)) // prints foo, d = foo` <br/> `const [d, i] = await Promise.reject('bar').then(...btap(console.warn, console.log)) // print bar, i = barr`
-
+| functions          |
+| ------------------ |
+| `map`              | `const [d, i] = await Promise.resolve('foo').then(...map(x => x.toUpperCase())) // d = FOO` <br/> `const [d, i] = await Promise.reject('bar').then(...map(x => x.toUpperCase())) // i = bar` |
+| `imap` (issue map) | `const [d, i] = await Promise.resolve('foo').then(...imap(x => x.toUpperCase())) // d = foo` <br/> const [d, i] = await Promise.reject('bar').then(...imap(x => x.toUpperCase())) // BAR` |
+| `bmap` (both map)  | `const [d, i] = await Promise.resolve('foo').then(...bmap(x => x.toUpperCase(), y => y.length)) // d = FOO` <br/> `const [d, i] = await Promise.reject('bar').then(...bmap(x => x.length, y => y.toUpperCase())) // BAR` |
+| `raw`              | `await Promise.resolve('foo').then(...raw(x => x.toUpperCase())) // FOO` <br/> `await Promise.reject('bar').then(...raw(x => x.toUpperCase())) // bar` |
+| `iraw` (issue raw) | `await Promise.resolve('foo').then(...iraw(x => x.toUpperCase())) // foo` <br/> `await Promise.reject('bar').then(...iraw(x => x.toUpperCase())) // BAR` |
+| `braw` (both raw)  | `await Promise.resolve('foo').then(...braw(x => x.toUpperCase(), y => y.length)) // d = FOO` <br/> `await Promise.reject('bar').then(...braw(x => x.length, y => y.toUpperCase())) // BAR` |
+| `tap`              | `const [d, i] = await Promise.resolve('foo').then(...tap(console.log)) // prints foo, d = foo` <br/> `const [d, i] = await Promise.reject('bar').then(...tap(console.log)) // i = bar` |
+| `itap` (issue tap) | `const [d, i] = await Promise.resolve('foo').then(...itap(console.log)) // d = foo` <br/> `const [d, i] = await Promise.reject('bar').then(console.log) // prints bar, i = bar` |
+| `btap` (both tap)  | `const [d, i] = await Promise.resolve('foo').then(...btap(console.log, console.warn)) // prints foo, d = foo` <br/> `const [d, i] = await Promise.reject('bar').then(...btap(console.warn, console.log)) // print bar, i = barr` |
 
 ## Woah, this is apparently a thing and so here are Links About This Stuff From Smart People:
+
 - https://medium.com/@gunar/async-control-flow-without-exceptions-nor-monads-b19af2acc553
 - https://blog.grossman.io/how-to-write-async-await-without-try-catch-blocks-in-javascript/
 - http://jessewarden.com/2017/11/easier-error-handling-using-asyncawait.html
@@ -233,14 +231,15 @@ You would use these if you don't use `fp` to wrap the promise.
 # Current Status
 
 **Known TODOs**
+
 - Actually make the readme good/helpful/clear.
 - Decide about aliases:
 
-  | Data | Issue | Both |
-  |------|-------|------|
-  | map (dmap) | imap | bmap (map with two functions) |
-  | raw (draw) | iraw | braw (raw with two functions) |
-  | tap (dtap) | itap | btap (tap with two functions) |
+  | Data       | Issue | Both                          |
+  | ---------- | ----- | ----------------------------- |
+  | map (dmap) | imap  | bmap (map with two functions) |
+  | raw (draw) | iraw  | braw (raw with two functions) |
+  | tap (dtap) | itap  | btap (tap with two functions) |
 
 **Is it production ready?**
 This library is a version two of [library](https://github.com/craigmichaelmartin/uter) extracted out of code in production at www.kujo.com. Kujo is still on that version 1, though, for now.
