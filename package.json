@@ -4,7 +4,7 @@
   "browser": "src/either.js",
   "main": "src/either.js",
   "engines": {
-    "node": ">=6"
+    "node": ">=9"
   },
   "files": [
     "src/either.js",
