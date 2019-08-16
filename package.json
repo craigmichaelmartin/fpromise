@@ -1,5 +1,5 @@
 {
-  "name": "fPromise",
+  "name": "fpromise",
   "version": "0.0.1",
   "browser": "src/either.js",
   "main": "src/either.js",
