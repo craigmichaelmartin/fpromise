@@ -155,7 +155,7 @@ const postHandler = (userDate, response) =>
 
 | function | explanation / example |
 | -------- | ----------------------|
-| `fp`     | Accepts a promise and return a promise which rejects for native errors or resolves to an Either (Data|Issue) <br/> `const [data, issue] = await fp(Promise.resolve('foo')); // data == 'foo'`
+| `fp`     | Accepts a promise and return a promise which rejects for native errors or resolves to an Either <br/> `const [data, issue] = await fp(Promise.resolve('foo')); // data == 'foo'`
 
 **`Data`**
 
