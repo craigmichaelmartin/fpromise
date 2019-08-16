@@ -1,0 +1,44 @@
+{
+  "name": "fPromise",
+  "version": "0.0.1",
+  "browser": "src/either.js",
+  "main": "src/either.js",
+  "engines": {
+    "node": ">=6"
+  },
+  "files": [
+    "src/either.js",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "npm run test:unit && npm run test:format",
+    "test:unit": "echo \"No tests yet\"",
+    "test:unit:watch": "jest --watch",
+    "test:unit:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --verbose",
+    "test:format": "prettier -l \"**/*.{js,json,md}\" \"!src/**/*.spec.js\" \"!coverage/**/*\"",
+    "format": "prettier --write  \"**/*.{js,json,md}\" \"!src/**/*.spec.js\" \"!coverage/**/*\"",
+    "pub": "npm run test && np"
+  },
+  "devDependencies": {
+    "jest": "^24.1.0",
+    "np": "^4.0.2",
+    "prettier": "^1.9.2"
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true,
+    "testEnvironment": "node"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "tabWidth": 2,
+    "singleQuote": true,
+    "trailingComma": "none"
+  },
+  "author": "Craig Martin",
+  "description": "A javascript which takes a functional approach to journeying with data through an application",
+  "license": "MIT",
+  "keywords": [
+    "javascript"
+  ]
+}
