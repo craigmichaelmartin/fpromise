@@ -22,8 +22,7 @@ It seeks to resolve [three problems with promises](https://dev.to/thecraigmichae
 (For background, and probably a better explanation about this library, read
 [that article about the problems with promises](https://dev.to/thecraigmichael/the-problem-with-promises-in-javascript-5h46)).
 
-`fPromise` solves these issues by adding a layer of abstraction within promises
-- re-designing promises's two path design (resolved/rejected) into three paths:
+`fPromise` solves these issues by adding a layer of abstraction within promises - re-designing promises's two path design (resolved/rejected) into three paths:
 a data path, a non-native exception path (ie, for promises rejected by your
 own intentions), and a native exception path.
 
@@ -94,7 +93,7 @@ const save = user => fp(db.execute(user.getInsertSQL()))
 // service/user.js
 const save = async data =>
   (await save(User(data)))
-    .tap(getStandardLog('user_creation))
+    .tap(getStandardLog('user_creation'))
     .map(User.parseUserFromDB)
     .itap(logError)
 
@@ -119,7 +118,7 @@ const save = user => db.execute(user.getInsertSQL();
 
 // service/user.js
 const save = data => save(data)
-  .then(...tap(getStandardLog('user_creation)))
+  .then(...tap(getStandardLog('user_creation')))
   .then(...map(User.parseUserFromDB))
   .then(...itap(logError))
 
@@ -139,7 +138,7 @@ const save = user => db.execute(user.getInsertSQL();
 
 // service/user.js
 const save = data => save(data)
-  .then(...tap(getStandardLog('user_creation)))
+  .then(...tap(getStandardLog('user_creation')))
   .then(...map(User.parseUserFromDB))
   .then(...itap(logError))
 
@@ -156,7 +155,7 @@ const postHandler = (userDate, response) =>
 
 | function | explanation / example |
 | -------- | ----------------------|
-| `fp`     | Accepts a promise and return a promise which rejects for native errors or resolves to an Either (Data|Issue) <br/> `const [data, issue] = await fp(Promise.resolve('foo')); // data == 'foo'` |
+| `fp`     | Accepts a promise and return a promise which rejects for native errors or resolves to an Either (Data|Issue) <br/> `const [data, issue] = await fp(Promise.resolve('foo')); // data == 'foo'`
 
 **`Data`**
 
